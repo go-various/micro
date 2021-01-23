@@ -6,11 +6,12 @@ import (
 	"time"
 )
 
+// Client
 type Client struct {
 	addr string
 }
 
-func (c *Client) DefaultRestyClient() *RestyClient {
+func (c *Client) RestyClient() *RestyClient {
 	return DefaultRestyClient(c.addr)
 }
 
@@ -18,26 +19,26 @@ func (c *Client) NewRestyClient(timeout time.Duration, InsecureSkipVerify bool) 
 	return NewRestyClient(c.addr, timeout, InsecureSkipVerify)
 }
 
-func (c *Client)NewRPCMsgpackClient() (*msgpackClient,error) {
+func (c *Client) NewRPCMsgpackClient() (*msgpackClient, error) {
 	conn, err := net.Dial("tcp", c.addr)
 	if err != nil {
-		return  nil, err
+		return nil, err
 	}
 	return &msgpackClient{
 		addr: c.addr,
 		conn: conn,
-		h: &codec.MsgpackHandle{},
-	},nil
+		h:    &codec.MsgpackHandle{},
+	}, nil
 }
 
-func (c *Client)NewRPCCodecClient() (*codecClient,error) {
+func (c *Client) NewRPCCodecClient() (*codecClient, error) {
 	conn, err := net.Dial("tcp", c.addr)
 	if err != nil {
-		return  nil, err
+		return nil, err
 	}
 	return &codecClient{
 		addr: c.addr,
 		conn: conn,
-		h: &codec.BincHandle{},
-	},nil
+		h:    &codec.BincHandle{},
+	}, nil
 }
