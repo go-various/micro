@@ -3,7 +3,7 @@ package micro
 
 
 type hashlb struct {
-	addrs Addrs
+	addrs Servers
 }
 
 func (l *hashlb)Client()*Client  {

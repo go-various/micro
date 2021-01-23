@@ -23,19 +23,19 @@ type Server struct {
 	Connections int
 }
 
-type Addrs map[string][]Server
+type Servers map[string][]Server
 
 type lbClient struct {
 	lb LoadBalance
 }
 
-func DefaultClient(addrs Addrs) *lbClient {
+func DefaultClient(addrs Servers) *lbClient {
 	return &lbClient{
 		lb: &rndlb{addrs: addrs},
 	}
 }
 
-func NewClient(p Policy,addrs Addrs) (*lbClient,error) {
+func NewClient(p Policy,addrs Servers) (*lbClient,error) {
 	switch p {
 	case PolicyRandom:
 		return &lbClient{lb: &rndlb{addrs: addrs}},nil
@@ -44,10 +44,10 @@ func NewClient(p Policy,addrs Addrs) (*lbClient,error) {
 		return &lbClient{lb: &rrlb{addrs: addrs}},nil
 
 	case PolicyConsistentHash:
-		return &lbClient{lb: &hashlb{addrs: Addrs{}}},nil
+		return &lbClient{lb: &hashlb{addrs: Servers{}}},nil
 
 	case PolicyLeastConnections:
-		return &lbClient{lb: &lclb{addrs: Addrs{}}}, nil
+		return &lbClient{lb: &lclb{addrs: Servers{}}}, nil
 
 	default:
 		return nil, errors.New("invalid loadbalance policy")

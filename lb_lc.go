@@ -2,7 +2,7 @@
 package micro
 
 type lclb struct {
-	addrs Addrs
+	addrs Servers
 }
 
 func (l *lclb)Client()*Client  {

@@ -6,7 +6,7 @@ import (
 )
 
 type rndlb struct {
-	addrs Addrs
+	addrs Servers
 }
 
 func (l *rndlb) Client() *Client {
