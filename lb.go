@@ -1,15 +1,15 @@
 package micro
 
-type LBType string
+import "errors"
+
+type Policy string
 
 const (
-	LBTypeRandom           LBType = "lb:rnd"
-	LBTypeRoundRobin       LBType = "lb:rr"
-	LBTypeConsistentHash   LBType = "lb:hash"
-	LBTypeLeastConnections LBType = "lb:lcs"
+	PolicyRandom           Policy = "lb:rnd"
+	PolicyRoundRobin       Policy = "lb:rr"
+	PolicyConsistentHash   Policy = "lb:hash"
+	PolicyLeastConnections Policy = "lb:lcs"
 )
-
-type Factory func(addrs Addrs) LoadBalance
 
 type LoadBalance interface {
 	Client() *Client
@@ -29,9 +29,28 @@ type lbClient struct {
 	lb LoadBalance
 }
 
-func NewLBClient(addrs Addrs) *lbClient {
+func DefaultClient(addrs Addrs) *lbClient {
 	return &lbClient{
-		lb: lb(addrs),
+		lb: &rndlb{addrs: addrs},
+	}
+}
+
+func NewClient(p Policy,addrs Addrs) (*lbClient,error) {
+	switch p {
+	case PolicyRandom:
+		return &lbClient{lb: &rndlb{addrs: addrs}},nil
+
+	case PolicyRoundRobin:
+		return &lbClient{lb: &rrlb{addrs: addrs}},nil
+
+	case PolicyConsistentHash:
+		return &lbClient{lb: &hashlb{addrs: Addrs{}}},nil
+
+	case PolicyLeastConnections:
+		return &lbClient{lb: &lclb{addrs: Addrs{}}}, nil
+
+	default:
+		return nil, errors.New("invalid loadbalance policy")
 	}
 }
 

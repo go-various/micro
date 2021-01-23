@@ -16,7 +16,7 @@ type RestyClient struct {
 	host        string
 }
 
-func DefaultRestyClient(host string) *RestyClient {
+func DefaultResty(host string) *RestyClient {
 	rawClient := resty.New()
 	rawClient.SetTimeout(time.Second * 30)
 	rawClient.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: false})
@@ -28,7 +28,7 @@ func DefaultRestyClient(host string) *RestyClient {
 	return rc
 }
 
-func NewRestyClient(host string, timeout time.Duration, InsecureSkipVerify bool) *RestyClient {
+func NewResty(host string, timeout time.Duration, InsecureSkipVerify bool) *RestyClient {
 	rawClient := resty.New()
 	rawClient.SetTimeout(timeout)
 	rawClient.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: InsecureSkipVerify})

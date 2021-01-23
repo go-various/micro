@@ -1,19 +1,9 @@
-//+build lb_rnd
-
 // random
 package micro
 
 import (
 	"math/rand"
 )
-
-func init() {
-	lb = func(addrs Addrs) LoadBalance {
-		return &rndlb{addrs: addrs}
-	}
-}
-
-var lb Factory
 
 type rndlb struct {
 	addrs Addrs

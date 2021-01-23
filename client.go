@@ -12,11 +12,11 @@ type Client struct {
 }
 
 func (c *Client) RestyClient() *RestyClient {
-	return DefaultRestyClient(c.addr)
+	return DefaultResty(c.addr)
 }
 
 func (c *Client) NewRestyClient(timeout time.Duration, InsecureSkipVerify bool) *RestyClient {
-	return NewRestyClient(c.addr, timeout, InsecureSkipVerify)
+	return NewResty(c.addr, timeout, InsecureSkipVerify)
 }
 
 func (c *Client) NewRPCMsgpackClient() (*msgpackClient, error) {

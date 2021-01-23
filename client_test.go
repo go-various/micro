@@ -3,38 +3,30 @@ package micro
 import "testing"
 
 func TestDefaultRestyClient(t *testing.T) {
-	lbc := NewLBClient(map[string][]Server{
+	lbc := DefaultClient(map[string][]Server{
 		"http://127.0.0.1/jdsh-v1": []Server{
 			{
-				Name:  "weight",
-				Value: "123",
 			},
 		},
 		"http://127.0.0.2/jdsh-v1": []Server{
 			{
-				Name:  "weight",
-				Value: "123",
 			},
 		},
 		"http://127.0.0.3/jdsh-v1": []Server{
 			{
-				Name:  "weight",
-				Value: "123",
 			},
 		},
 	})
 	cli := lbc.LBClient()
 
-	res, err := cli.DefaultRestyClient().GetRequest().Post("/names")
+	res, err := cli.RestyClient().GetRequest().Post("/names")
 	t.Log(err, res)
 }
 
 func TestClient_NewRPCCodecClient(t *testing.T) {
-	lbc := NewLBClient(map[string][]Server{
+	lbc := DefaultClient(map[string][]Server{
 		"127.0.0.1:7109": []Server{
 			{
-				Name:  "weight",
-				Value: "123",
 			},
 		},
 	})
@@ -54,11 +46,9 @@ func TestClient_NewRPCCodecClient(t *testing.T) {
 }
 
 func TestClient_NewRPCMsgpackClient(t *testing.T) {
-	lbc := NewLBClient(map[string][]Server{
+	lbc := DefaultClient(map[string][]Server{
 		"127.0.0.1:7109": []Server{
 			{
-				Name:  "weight",
-				Value: "123",
 			},
 		},
 	})
