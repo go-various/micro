@@ -11,6 +11,10 @@ type Client struct {
 	addr string
 }
 
+func (c *Client)Addr()string  {
+	return c.addr
+}
+
 func (c *Client) RestyClient() *RestyClient {
 	return DefaultResty(c.addr)
 }
