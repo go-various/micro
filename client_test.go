@@ -9,7 +9,7 @@ type mockHttpService struct {
 func (s *mockHttpService)GetServers(name,tags string)([]Server,error){
 	return []Server{
 		{
-			ID:          "moke-1",
+			ID:          "mock-1",
 			Address:     "http://localhost:8080",
 			Weight:      0,
 			TPSDelay:    0,
@@ -38,7 +38,7 @@ type mockRPCService struct {
 func (s *mockRPCService)GetServers(name, tags string)([]Server,error){
 	return []Server{
 		{
-			ID:          "moke-1",
+			ID:          "mock-1",
 			Address:     "localhost:8080",
 			Weight:      0,
 			TPSDelay:    0,
