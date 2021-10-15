@@ -2,34 +2,53 @@ package micro
 
 import "testing"
 
-func TestDefaultRestyClient(t *testing.T) {
-	lbc := DefaultClient(map[string][]Server{
-		"http://127.0.0.1/jdsh-v1": []Server{
-			{
-			},
-		},
-		"http://127.0.0.2/jdsh-v1": []Server{
-			{
-			},
-		},
-		"http://127.0.0.3/jdsh-v1": []Server{
-			{
-			},
-		},
-	})
-	cli := lbc.LBClient()
+type mockHttpService struct {
 
-	res, err := cli.RestyClient().GetRequest().Post("/names")
+}
+
+func (s *mockHttpService)GetServers()([]Server,error){
+	return []Server{
+		{
+			ID:          "moke-1",
+			Address:     "http://localhost:8080",
+			Weight:      0,
+			TPSDelay:    0,
+			Connections: 0,
+		},
+	},nil
+}
+
+func TestDefaultRestyClient(t *testing.T) {
+	lbc := DefaultLBClient(&mockHttpService{})
+
+	cli, err := lbc.LBClient().RestyClient()
+	req := cli.GetRequest()
+	if err != nil {
+		t.Fatal(err)
+		return
+	}
+
+	res, err := req.Post("/names")
 	t.Log(err, res)
+}
+type mockRPCService struct {
+
+}
+
+func (s *mockRPCService)GetServers()([]Server,error){
+	return []Server{
+		{
+			ID:          "moke-1",
+			Address:     "localhost:8080",
+			Weight:      0,
+			TPSDelay:    0,
+			Connections: 0,
+		},
+	},nil
 }
 
 func TestClient_NewRPCCodecClient(t *testing.T) {
-	lbc := DefaultClient(map[string][]Server{
-		"127.0.0.1:7109": []Server{
-			{
-			},
-		},
-	})
+	lbc := DefaultLBClient(&mockRPCService{})
 
 	cli, err := lbc.LBClient().NewRPCCodecClient()
 	if err != nil {
@@ -46,12 +65,7 @@ func TestClient_NewRPCCodecClient(t *testing.T) {
 }
 
 func TestClient_NewRPCMsgpackClient(t *testing.T) {
-	lbc := DefaultClient(map[string][]Server{
-		"127.0.0.1:7109": []Server{
-			{
-			},
-		},
-	})
+	lbc := DefaultLBClient(&mockRPCService{})
 
 	cli, err := lbc.LBClient().NewRPCMsgpackClient()
 	if err != nil {

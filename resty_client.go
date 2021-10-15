@@ -78,6 +78,7 @@ type request struct {
 }
 
 func (r *RestyClient) GetRequest() *request {
+
 	req := r.rawClient.R()
 	req.SetHeader("Trace-ID", uuid.New().String())
 	return &request{host: strings.TrimRight(r.host, "/"), Request: req}
@@ -85,30 +86,84 @@ func (r *RestyClient) GetRequest() *request {
 
 func (r *request) Post(path string) (*resty.Response, error) {
 	uri := fmt.Sprintf("%s/%s", r.host, strings.TrimLeft(path, "/"))
-	return r.Request.Post(uri)
+	if circuit.IsHolding(uri) {
+		return nil, ErrCircuitBreakerMessage
+	}
+
+	resp, err :=   r.Request.Post(uri)
+	if err != nil {
+		circuit.Failed(uri)
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (r *request) Get(path string) (*resty.Response, error) {
 	uri := fmt.Sprintf("%s/%s", r.host, strings.TrimLeft(path, "/"))
-	return r.Request.Get(uri)
+	if circuit.IsHolding(uri) {
+		return nil, ErrCircuitBreakerMessage
+	}
+
+	resp, err :=   r.Request.Get(uri)
+	if err != nil {
+		circuit.Failed(uri)
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (r *request) Put(path string) (*resty.Response, error) {
 	uri := fmt.Sprintf("%s/%s", r.host, strings.TrimLeft(path, "/"))
-	return r.Request.Put(uri)
+	if circuit.IsHolding(uri) {
+		return nil, ErrCircuitBreakerMessage
+	}
+
+	resp, err :=   r.Request.Put(uri)
+	if err != nil {
+		circuit.Failed(uri)
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (r *request) Delete(path string) (*resty.Response, error) {
 	uri := fmt.Sprintf("%s/%s", r.host, strings.TrimLeft(path, "/"))
-	return r.Request.Delete(uri)
+	if circuit.IsHolding(uri) {
+		return nil, ErrCircuitBreakerMessage
+	}
+
+	resp, err :=   r.Request.Delete(uri)
+	if err != nil {
+		circuit.Failed(uri)
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (r *request) Head(path string) (*resty.Response, error) {
 	uri := fmt.Sprintf("%s/%s", r.host, strings.TrimLeft(path, "/"))
-	return r.Request.Head(uri)
+	if circuit.IsHolding(uri) {
+		return nil, ErrCircuitBreakerMessage
+	}
+
+	resp, err :=  r.Request.Head(uri)
+	if err != nil {
+		circuit.Failed(uri)
+		return nil, err
+	}
+	return resp, nil
+
 }
 
 func (r *request) Options(path string) (*resty.Response, error) {
 	uri := fmt.Sprintf("%s/%s", r.host, strings.TrimLeft(path, "/"))
-	return r.Request.Options(uri)
+	if circuit.IsHolding(uri) {
+		return nil, ErrCircuitBreakerMessage
+	}
+	resp, err := r.Request.Options(uri)
+	if err != nil {
+		circuit.Failed(uri)
+		return nil, err
+	}
+	return resp, nil
 }

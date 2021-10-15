@@ -1,7 +1,5 @@
 package micro
 
-import "errors"
-
 type Policy string
 
 const (
@@ -29,28 +27,28 @@ type lbClient struct {
 	lb LoadBalance
 }
 
-func DefaultClient(addrs Servers) *lbClient {
+func DefaultLBClient(service Service) *lbClient {
 	return &lbClient{
-		lb: &rndlb{addrs: addrs},
+		lb: &rndlb{Service: service},
 	}
 }
 
-func NewClient(p Policy,addrs Servers) (*lbClient,error) {
+func NewLBClient(p Policy, service Service) *lbClient {
 	switch p {
 	case PolicyRandom:
-		return &lbClient{lb: &rndlb{addrs: addrs}},nil
+		return &lbClient{lb: &rndlb{Service: service}}
 
 	case PolicyRoundRobin:
-		return &lbClient{lb: &rrlb{addrs: addrs}},nil
+		return &lbClient{lb: &rrlb{Service: service}}
 
 	case PolicyConsistentHash:
-		return &lbClient{lb: &hashlb{addrs: Servers{}}},nil
+		return &lbClient{lb: &hashlb{Service: service}}
 
 	case PolicyLeastConnections:
-		return &lbClient{lb: &lclb{addrs: Servers{}}}, nil
+		return &lbClient{lb: &lclb{Service: service}}
 
 	default:
-		return nil, errors.New("invalid loadbalance policy")
+		return nil
 	}
 }
 

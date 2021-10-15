@@ -1,10 +1,8 @@
-// Least Connections
 package micro
-
+// Least Connections
 type lclb struct {
-	addrs Servers
+	Service Service
 }
-
 func (l *lclb)Client()*Client  {
 	return nil
 }

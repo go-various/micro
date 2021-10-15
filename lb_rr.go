@@ -4,7 +4,7 @@ package micro
 
 
 type rrlb struct {
-	addrs Servers
+	Service Service
 }
 
 func (l *rrlb) Client() *Client {

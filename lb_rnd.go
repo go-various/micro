@@ -1,22 +1,23 @@
-// random
+
 package micro
 
 import (
+	"errors"
 	"math/rand"
 )
-
+// random
 type rndlb struct {
-	addrs Servers
+	Service Service
 }
 
-func (l *rndlb) Client() *Client {
-
-	var addrs []string
-	for addr, _ := range l.addrs {
-		addrs = append(addrs, addr)
+func (l *rndlb) Client() *Client{
+	if nil == l.Service {
+		return &Client{serviceErr: errors.New("service not implemented")}
 	}
-	if len(addrs) == 0 {
-		return nil
+	ss, err := l.Service.GetServers()
+	if err != nil {
+		return &Client{serviceErr: err}
 	}
-	return &Client{addr: addrs[rand.Intn(len(addrs))]}
+	s := ss[rand.Intn(len(ss))]
+	return &Client{serviceErr: err, addr: s.Address}
 }

@@ -1,9 +1,9 @@
-// Consistent Hash
+
 package micro
 
-
+// Consistent Hash
 type hashlb struct {
-	addrs Servers
+	Service Service
 }
 
 func (l *hashlb)Client()*Client  {
