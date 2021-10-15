@@ -7,6 +7,6 @@ type rrlb struct {
 	Service Service
 }
 
-func (l *rrlb) Client() *Client {
+func (l *rrlb) Client(name, tags string) *Client {
 	return nil
 }

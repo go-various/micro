@@ -10,7 +10,7 @@ const (
 )
 
 type LoadBalance interface {
-	Client() *Client
+	Client(name, tags string) *Client
 }
 
 type Server struct {
@@ -52,6 +52,6 @@ func NewLBClient(p Policy, service Service) *lbClient {
 	}
 }
 
-func (lb *lbClient) LBClient() *Client {
-	return lb.lb.Client()
+func (lb *lbClient) LBClient(name, tags string) *Client {
+	return lb.lb.Client(name, tags)
 }

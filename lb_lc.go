@@ -3,6 +3,6 @@ package micro
 type lclb struct {
 	Service Service
 }
-func (l *lclb)Client()*Client  {
+func (l *lclb)Client(name, tags string)*Client  {
 	return nil
 }

@@ -10,11 +10,11 @@ type rndlb struct {
 	Service Service
 }
 
-func (l *rndlb) Client(name string) *Client{
+func (l *rndlb) Client(name string, tags string) *Client{
 	if nil == l.Service {
 		return &Client{serviceErr: errors.New("service not implemented")}
 	}
-	ss, err := l.Service.GetServers(name)
+	ss, err := l.Service.GetServers(name, tags)
 	if err != nil {
 		return &Client{serviceErr: err}
 	}

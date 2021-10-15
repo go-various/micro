@@ -6,7 +6,7 @@ type mockHttpService struct {
 
 }
 
-func (s *mockHttpService)GetServers(name string)([]Server,error){
+func (s *mockHttpService)GetServers(name,tags string)([]Server,error){
 	return []Server{
 		{
 			ID:          "moke-1",
@@ -21,7 +21,7 @@ func (s *mockHttpService)GetServers(name string)([]Server,error){
 func TestDefaultRestyClient(t *testing.T) {
 	lbc := DefaultLBClient(&mockHttpService{})
 
-	cli, err := lbc.LBClient().RestyClient()
+	cli, err := lbc.LBClient("","").RestyClient()
 	req := cli.GetRequest()
 	if err != nil {
 		t.Fatal(err)
@@ -35,7 +35,7 @@ type mockRPCService struct {
 
 }
 
-func (s *mockRPCService)GetServers(name string)([]Server,error){
+func (s *mockRPCService)GetServers(name, tags string)([]Server,error){
 	return []Server{
 		{
 			ID:          "moke-1",
@@ -50,7 +50,7 @@ func (s *mockRPCService)GetServers(name string)([]Server,error){
 func TestClient_NewRPCCodecClient(t *testing.T) {
 	lbc := DefaultLBClient(&mockRPCService{})
 
-	cli, err := lbc.LBClient().NewRPCCodecClient()
+	cli, err := lbc.LBClient("","").NewRPCCodecClient()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -67,7 +67,7 @@ func TestClient_NewRPCCodecClient(t *testing.T) {
 func TestClient_NewRPCMsgpackClient(t *testing.T) {
 	lbc := DefaultLBClient(&mockRPCService{})
 
-	cli, err := lbc.LBClient().NewRPCMsgpackClient()
+	cli, err := lbc.LBClient("","").NewRPCMsgpackClient()
 	if err != nil {
 		t.Fatal(err)
 	}
