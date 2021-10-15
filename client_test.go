@@ -6,7 +6,7 @@ type mockHttpService struct {
 
 }
 
-func (s *mockHttpService)GetServers()([]Server,error){
+func (s *mockHttpService)GetServers(name string)([]Server,error){
 	return []Server{
 		{
 			ID:          "moke-1",
@@ -35,7 +35,7 @@ type mockRPCService struct {
 
 }
 
-func (s *mockRPCService)GetServers()([]Server,error){
+func (s *mockRPCService)GetServers(name string)([]Server,error){
 	return []Server{
 		{
 			ID:          "moke-1",
