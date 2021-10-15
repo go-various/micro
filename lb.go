@@ -23,35 +23,35 @@ type Server struct {
 
 type Servers map[string][]Server
 
-type lbClient struct {
+type LBClient struct {
 	lb LoadBalance
 }
 
-func DefaultLBClient(service Service) *lbClient {
-	return &lbClient{
+func DefaultLBClient(service Service) *LBClient {
+	return &LBClient{
 		lb: &rndlb{Service: service},
 	}
 }
 
-func NewLBClient(p Policy, service Service) *lbClient {
+func NewLBClient(p Policy, service Service) *LBClient {
 	switch p {
 	case PolicyRandom:
-		return &lbClient{lb: &rndlb{Service: service}}
+		return &LBClient{lb: &rndlb{Service: service}}
 
 	case PolicyRoundRobin:
-		return &lbClient{lb: &rrlb{Service: service}}
+		return &LBClient{lb: &rrlb{Service: service}}
 
 	case PolicyConsistentHash:
-		return &lbClient{lb: &hashlb{Service: service}}
+		return &LBClient{lb: &hashlb{Service: service}}
 
 	case PolicyLeastConnections:
-		return &lbClient{lb: &lclb{Service: service}}
+		return &LBClient{lb: &lclb{Service: service}}
 
 	default:
 		return nil
 	}
 }
 
-func (lb *lbClient) LBClient(name, tags string) *Client {
+func (lb *LBClient) LBClient(name, tags string) *Client {
 	return lb.lb.Client(name, tags)
 }
