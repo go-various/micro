@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/go-resty/resty/v2"
 	"github.com/google/uuid"
+	"io"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -39,12 +41,12 @@ func NewResty(host string, timeout time.Duration, InsecureSkipVerify bool) *Rest
 	}
 }
 
-//原生resty客户端
+//GetRawClient 原生resty客户端
 func (r *RestyClient) GetRawClient() *resty.Client {
 	return r.rawClient
 }
 
-//调用日志
+//TraceInfo 调用日志
 func (r *RestyClient) TraceInfo(resp *resty.Response, full bool) map[string]string {
 	result := make(map[string]string)
 	if full {
@@ -80,8 +82,72 @@ type request struct {
 func (r *RestyClient) GetRequest() *request {
 
 	req := r.rawClient.R()
-	req.SetHeader("Trace-ID", uuid.New().String())
+	req.SetHeader("Logging-ID", uuid.New().String())
 	return &request{host: strings.TrimRight(r.host, "/"), Request: req}
+}
+
+func (r *request) SetQueryParam(param, value string) *request {
+	r.QueryParam.Set(param, value)
+	return r
+}
+func (r *request) SetQueryParams(params map[string]string) *request {
+	for p, v := range params {
+		r.SetQueryParam(p, v)
+	}
+	return r
+}
+func (r *request) SetQueryParamsFromValues(params url.Values) *request {
+	for p, v := range params {
+		for _, pv := range v {
+			r.QueryParam.Add(p, pv)
+		}
+	}
+	return r
+}
+func (r *request) SetFormData(data map[string]string) *request {
+	r.Request.SetFormData(data)
+	return r
+}
+
+func (r *request) SetFormDataFromValues(data url.Values) *request {
+	r.Request.SetFormDataFromValues(data)
+	return r
+}
+
+func (r *request) SetMultipartFormData(data map[string]string) *request {
+	r.Request.SetMultipartFormData(data)
+	return r
+}
+
+func (r *request) SetFile(param, filePath string) *request {
+	r.Request.SetFile(param, filePath)
+	return r
+}
+func (r *request) SetFiles(files map[string]string) *request {
+	r.Request.SetFiles(files)
+	return r
+}
+func (r *request) SetFileReader(param, fileName string, reader io.Reader) *request {
+	r.Request.SetFileReader(param, fileName, reader)
+	return r
+}
+func (r *request) SetMultipartField(param, fileName, contentType string, reader io.Reader) *request {
+	r.Request.SetMultipartField(param, fileName, contentType, reader)
+	return r
+}
+
+func (r *request) SetBody(body interface{}) *request {
+	r.Request.SetBody(body)
+	return r
+}
+
+func (r *request) SetHeader(header, value string) *request {
+	r.Header.Set(header, value)
+	return r
+}
+func (r *request) SetHeaders(headers map[string]string) *request {
+	r.Request.SetHeaders(headers)
+	return r
 }
 
 func (r *request) Post(path string) (*resty.Response, error) {
