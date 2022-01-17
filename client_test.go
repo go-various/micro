@@ -1,9 +1,21 @@
 package micro
 
-import "testing"
+import (
+	"fmt"
+	"net/http"
+	"testing"
+)
 
 type mockHttpService struct {
 
+}
+
+type trace struct {
+
+}
+
+func (t trace) Trace(req *http.Request, res *http.Response, err error) {
+	fmt.Println(req.URL.String(), res.StatusCode, err)
 }
 
 func (s *mockHttpService)GetServers(name,tags string)([]Server,error){
@@ -19,10 +31,15 @@ func (s *mockHttpService)GetServers(name,tags string)([]Server,error){
 }
 
 func TestDefaultRestyClient(t *testing.T) {
-	lbc := DefaultLBClient(&mockHttpService{})
+	lbc := RandomLBClient(&mockHttpService{})
+	lbc.AddHooks(&trace{})
+	cli := lbc.Client("mock-1","")
 
-	cli, err := lbc.LBClient("","").RestyClient()
-	req := cli.GetRequest()
+	rc, err := cli.RestyClient()
+	if err != nil {
+		t.Fatal(err)
+	}
+	req := rc.GetRequest()
 	if err != nil {
 		t.Fatal(err)
 		return
@@ -48,9 +65,9 @@ func (s *mockRPCService)GetServers(name, tags string)([]Server,error){
 }
 
 func TestClient_NewRPCCodecClient(t *testing.T) {
-	lbc := DefaultLBClient(&mockRPCService{})
+	lbc := RandomLBClient(&mockRPCService{})
 
-	cli, err := lbc.LBClient("","").NewRPCCodecClient()
+	cli, err := lbc.Client("","").NewRPCCodecClient()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -65,9 +82,9 @@ func TestClient_NewRPCCodecClient(t *testing.T) {
 }
 
 func TestClient_NewRPCMsgpackClient(t *testing.T) {
-	lbc := DefaultLBClient(&mockRPCService{})
+	lbc := RandomLBClient(&mockRPCService{})
 
-	cli, err := lbc.LBClient("","").NewRPCMsgpackClient()
+	cli, err := lbc.Client("","").NewRPCMsgpackClient()
 	if err != nil {
 		t.Fatal(err)
 	}

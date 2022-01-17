@@ -16,7 +16,6 @@ type codecClient struct {
 	deadline time.Duration
 }
 
-
 func (c *codecClient)WithHandler(h codec.Handle) *codecClient {
 	c.locker.Lock()
 	defer c.locker.Unlock()

@@ -23,35 +23,22 @@ type Server struct {
 
 type Servers map[string][]Server
 
-type LBClient struct {
-	lb LoadBalance
+type LBAdapter interface {
+	Client(name, tags string) *Client
+	AddHooks(hooks ...Hook)
 }
 
-func DefaultLBClient(service Service) *LBClient {
-	return &LBClient{
-		lb: &rndlb{Service: service},
-	}
+type lbClient struct {
+	lb    LoadBalance
+	hooks []Hook
 }
 
-func NewLBClient(p Policy, service Service) *LBClient {
-	switch p {
-	case PolicyRandom:
-		return &LBClient{lb: &rndlb{Service: service}}
-
-	case PolicyRoundRobin:
-		return &LBClient{lb: &rrlb{Service: service}}
-
-	case PolicyConsistentHash:
-		return &LBClient{lb: &hashlb{Service: service}}
-
-	case PolicyLeastConnections:
-		return &LBClient{lb: &lclb{Service: service}}
-
-	default:
-		return nil
-	}
+func (lbc *lbClient) Client(name, tags string) *Client {
+	cli := lbc.lb.Client(name, tags)
+	cli.hooks = lbc.hooks
+	return cli
 }
 
-func (lb *LBClient) LBClient(name, tags string) *Client {
-	return lb.lb.Client(name, tags)
+func (lbc *lbClient) AddHooks(hooks ...Hook) {
+	lbc.hooks = append(lbc.hooks, hooks...)
 }

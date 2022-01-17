@@ -5,9 +5,16 @@ import (
 	"errors"
 	"math/rand"
 )
-// random
+// random loadBalance client
 type rndlb struct {
 	Service Service
+}
+
+func RandomLBClient(service Service) LBAdapter {
+	return &lbClient{
+		lb:    &rndlb{Service: service},
+		hooks: make([]Hook, 0),
+	}
 }
 
 func (l *rndlb) Client(name string, tags string) *Client{
@@ -18,6 +25,10 @@ func (l *rndlb) Client(name string, tags string) *Client{
 	if err != nil {
 		return &Client{serviceErr: err}
 	}
+	if len(ss) == 0 {
+		return &Client{serviceErr: errors.New("services length is zero")}
+	}
+
 	s := ss[rand.Intn(len(ss))]
 	return &Client{serviceErr: err, addr: s.Address}
 }
