@@ -31,7 +31,7 @@ func (s *mockHttpService)GetServers(name,tags string)([]Server,error){
 }
 
 func TestDefaultRestyClient(t *testing.T) {
-	lbc := RandomLBClient(&mockHttpService{})
+	lbc := RandomAdapter(&mockHttpService{})
 	lbc.AddHooks(&trace{})
 	cli := lbc.Client("mock-1","")
 
@@ -65,7 +65,7 @@ func (s *mockRPCService)GetServers(name, tags string)([]Server,error){
 }
 
 func TestClient_NewRPCCodecClient(t *testing.T) {
-	lbc := RandomLBClient(&mockRPCService{})
+	lbc := RandomAdapter(&mockRPCService{})
 
 	cli, err := lbc.Client("","").NewRPCCodecClient()
 	if err != nil {
@@ -82,7 +82,7 @@ func TestClient_NewRPCCodecClient(t *testing.T) {
 }
 
 func TestClient_NewRPCMsgpackClient(t *testing.T) {
-	lbc := RandomLBClient(&mockRPCService{})
+	lbc := RandomAdapter(&mockRPCService{})
 
 	cli, err := lbc.Client("","").NewRPCMsgpackClient()
 	if err != nil {

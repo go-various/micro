@@ -10,7 +10,7 @@ type rndlb struct {
 	Service Service
 }
 
-func RandomLBClient(service Service) LBAdapter {
+func RandomAdapter(service Service) ClientAdapter {
 	return &lbClient{
 		lb:    &rndlb{Service: service},
 		hooks: make([]Hook, 0),

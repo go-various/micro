@@ -23,7 +23,7 @@ type Server struct {
 
 type Servers map[string][]Server
 
-type LBAdapter interface {
+type ClientAdapter interface {
 	Client(name, tags string) *Client
 	AddHooks(hooks ...Hook)
 }
