@@ -105,15 +105,13 @@ func (r *request) Options(path string) (*resty.Response, error) {
 
 func (r *request) Execute(method string, path string) (resp *resty.Response, err error) {
 	uri := fmt.Sprintf("%s/%s", r.host, strings.TrimLeft(path, "/"))
-
 	if circuit.IsHolding(uri) {
 		r.trace(r.RawRequest, nil, ErrCircuitBreakerMessage)
 		return nil, ErrCircuitBreakerMessage
 	}
 
-	resp, err =  r.Request.Execute(method, uri)
+	resp, err = r.Request.Execute(method, uri)
 	if err != nil {
-		r.trace(r.RawRequest, nil, err)
 		circuit.Failed(uri)
 		return nil, err
 	}
@@ -123,7 +121,7 @@ func (r *request) Execute(method string, path string) (resp *resty.Response, err
 
 }
 
-func (r *request) trace(req *http.Request, res *http.Response, err error)  {
+func (r *request) trace(req *http.Request, res *http.Response, err error) {
 	for _, hook := range r.r.hooks {
 		hook.Trace(req, res, err)
 	}
